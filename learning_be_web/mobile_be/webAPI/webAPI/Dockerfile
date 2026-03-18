@@ -1,17 +1,18 @@
 # Build stage
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-WORKDIR /app
+WORKDIR /src
 
-COPY . ./
+COPY . .
+WORKDIR /src/webAPI
 RUN dotnet restore
-RUN dotnet publish -c Release -o out
+RUN dotnet publish -c Release -o /app/out
 
 # Runtime stage
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
-COPY --from=build /app/out ./
+COPY --from=build /app/out .
 
 ENV ASPNETCORE_URLS=http://+:10000
 EXPOSE 10000
 
-ENTRYPOINT ["dotnet", "webAPI"]
+ENTRYPOINT ["dotnet", "webAPI.dll"]
